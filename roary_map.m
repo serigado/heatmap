@@ -7,9 +7,12 @@
 % insert here any strains to exclude (cell array of strings)
 strains_to_exclude = {'A-208185', 'A-216185'};
 
-% insert strain groups to analyse (order matters). Must be cell array
-% can choose between 'avian', 'canine', 'bovine', 'human'
-strain_groups = {'canine', 'avian'};
+% insert strain groups to analyse (order matters).
+% Must be a cell array, even only a strain is chosen!
+% can choose between e.g. {'A', 'C', 'W'}
+% This will select all strains that start with this letters A, C and W
+% and order the heat maps accordingly
+strain_groups = {'C', 'A', 'W'};
 
 
 %% import data
