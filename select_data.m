@@ -1,8 +1,4 @@
-% 02-Jun-2015 00:32
-
 function sub_table = select_data(table, strain_groups, strains_to_exclude)
-
-
 %% create indices of strains to exclude
 % anonymous function
 % argument: strain name; returns index of that strain
@@ -29,31 +25,23 @@ clear excludeStrain
 % C - caninea
 % W or Z - bovine
 % H or R - human
-avianStrain = cellfun(@(x)x(1)=='A', table.strains_names, 'UniformOutput', true);
-canineStrain = cellfun(@(x)x(1)=='C', table.strains_names, 'UniformOutput', true);
-bovineStrain = cellfun(@(x)x(1)=='W' || x(1)=='Z', table.strains_names, 'UniformOutput', true);
-humanStrain = cellfun(@(x)x(1)=='H' || x(1)=='R', table.strains_names, 'UniformOutput', true);
 
-% create dictionary to associate strain groups to the variables
-keys = {'avian', 'canine', 'bovine', 'human'};
-values = {avianStrain, canineStrain, bovineStrain, humanStrain};
-map = containers.Map(keys, values);
+% returns logical array that selects the strain indices according to their
+% first letter.
+% e.g. selectStrain('A') will select the strains with names starting with
+% the letter 'A'. 
+selectStrain = @(firstLetter, names)cellfun(@(x)x(1)==firstLetter, names, 'UniformOutput', true);
+
 
 % create the sub_table
 sub_table.data = [];
 sub_table.strains_names = [];
 for s=1:numel(strain_groups)
-    sub_table.data = [sub_table.data; table.data(map(strain_groups{s}),:)];
-    sub_table.strains_names = [sub_table.strains_names table.strains_names(map(strain_groups{s}))];
+    sel_strain = selectStrain(strain_groups{s}, table.strains_names);
+    sub_table.data = [sub_table.data; table.data(sel_strain,:)];
+    sub_table.strains_names = [sub_table.strains_names table.strains_names(sel_strain)];
 end
 sub_table.genes_names = table.genes_names;
 sub_table.nr_strains = size(sub_table.data, 1);
 sub_table.nr_genes = size(sub_table.data, 2);
 
-
-% recalculate the strains indexes for the reduced table
-
-sub_table.avianStrain = cellfun(@(x)x(1)=='A', sub_table.strains_names, 'UniformOutput', true);
-sub_table.canineStrain = cellfun(@(x)x(1)=='C', sub_table.strains_names, 'UniformOutput', true);
-sub_table.bovineStrain = cellfun(@(x)x(1)=='W' || x(1)=='Z', sub_table.strains_names, 'UniformOutput', true);
-sub_table.humanStrain = cellfun(@(x)x(1)=='H' || x(1)=='R', sub_table.strains_names, 'UniformOutput', true);
