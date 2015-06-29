@@ -1,9 +1,6 @@
-% 31 May 2015, 12:44
-
-% read strains-genes table from fileName
-% and return a table structure with the data
-
 function table = import_data(fileName)
+% read strains and genes table from fileName and return a table structure 
+% with the data
 
 %% import data
 delimiterIn='\t';

@@ -36,8 +36,19 @@ selectStrain = @(firstLetter, names)cellfun(@(x)x(1)==firstLetter, names, 'Unifo
 % create the sub_table
 sub_table.data = [];
 sub_table.strains_names = [];
+sub_table.tickPositions = [];
+blockSizes = [];
 for s=1:numel(strain_groups)
     sel_strain = selectStrain(strain_groups{s}, table.strains_names);
+    
+    % check the groups are in a single block
+    [~,idxFirst] = find(sel_strain, 1, 'first');
+    [~,idxLast] = find(sel_strain, 1, 'last');
+    assert(idxLast-idxFirst+1 == sum(sel_strain), ...
+        'group strain is not in a single block');
+    
+    blockSizes = [blockSizes sum(sel_strain)];
+        
     sub_table.data = [sub_table.data; table.data(sel_strain,:)];
     sub_table.strains_names = [sub_table.strains_names table.strains_names(sel_strain)];
 end
@@ -45,3 +56,13 @@ sub_table.genes_names = table.genes_names;
 sub_table.nr_strains = size(sub_table.data, 1);
 sub_table.nr_genes = size(sub_table.data, 2);
 
+
+tBlockPositions = [0 cumsum(blockSizes)];
+for i=1:numel(blockSizes)
+    sub_table.tickPositions(i) = (tBlockPositions(i) + tBlockPositions(i+1))/2;
+end    
+
+[val, idx] = sort(sub_table.tickPositions);
+sub_table.tickPositions = val;
+sub_table.tickLabels = strain_groups(idx);
+sub_table.blockPositions = cumsum(blockSizes);
