@@ -5,7 +5,7 @@ strains_to_exclude = {};
 
 % insert strain groups to analyse (order matters). Must be cell array
 % can choose between 'avian', 'canine', 'bovine', 'human'
-strain_groups = {'C', 'W'};
+strain_groups = {'C', 'W', 'R', 'H', 'A', 'Z'};
 
 %% import data
 table = import_data('pan_matrix_70284');
@@ -21,13 +21,17 @@ fid = fopen('stats_gene_all', 'W');
 
 selectStrain = @(firstLetter, names)cellfun(@(x)x(1)==firstLetter, names, 'UniformOutput', true);
 
+sel_strain = {};
+for s=1:numel(strain_groups)
+    sel_strain{s} = selectStrain(strain_groups{s}, sub_table.strains_names);
+end    
+
 for gene = 1:sub_table.nr_genes
     strainsContainingGene = sub_table.data(:, gene)';
     fprintf(fid, '%s', sub_table.genes_names{gene});
     % calculate percentages for each of the strain groups
     for s=1:numel(strain_groups)
-        sel_strain = selectStrain(strain_groups{s}, sub_table.strains_names);
-        percentage = 100*sum(strainsContainingGene & sel_strain) / sum(sel_strain);
+        percentage = 100*sum(strainsContainingGene & sel_strain{s}) / sum(sel_strain{s});
         fprintf(fid, ',%1.2f', percentage);
     end
     fprintf(fid, '\n');
