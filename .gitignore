@@ -1,3 +1,5 @@
 /work_matrix
 *.m~
 /gene_names
+/stats_gene_all
+/pan_matrix_70284
